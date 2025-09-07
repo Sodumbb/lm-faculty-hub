@@ -2,6 +2,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 import { 
   Table,
   TableBody,
@@ -16,11 +22,13 @@ import {
   Calendar,
   CheckCircle,
   ArrowUp,
-  MessageSquare
+  MessageSquare,
+  Clock,
+  Settings
 } from "lucide-react";
 
 const IssueHandling = () => {
-  const openIssues = [
+  const [openIssues, setOpenIssues] = useState([
     {
       id: "ISS001",
       title: "Power failure in Electronics Lab 1",
@@ -54,9 +62,9 @@ const IssueHandling = () => {
       status: "open",
       description: "Room temperature too high for equipment operation"
     }
-  ];
+  ]);
 
-  const resolvedIssues = [
+  const [resolvedIssues] = useState([
     {
       id: "ISS004",
       title: "Function generator calibration issue",
@@ -77,16 +85,25 @@ const IssueHandling = () => {
       priority: "high",
       resolution: "Router replaced and network configuration updated"
     }
-  ];
+  ]);
+
+  const [isAddingIssue, setIsAddingIssue] = useState(false);
+  const [newIssue, setNewIssue] = useState({
+    title: "",
+    lab: "",
+    priority: "medium",
+    description: "",
+    assignedTo: ""
+  });
 
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
       case 'critical':
-        return <Badge variant="destructive" className="bg-destructive text-destructive-foreground">Critical</Badge>;
+        return <Badge className="bg-destructive/20 text-destructive border-destructive/30">Critical</Badge>;
       case 'high':
-        return <Badge variant="destructive" className="bg-destructive/70 text-destructive-foreground">High</Badge>;
+        return <Badge className="bg-destructive/15 text-destructive border-destructive/20">High</Badge>;
       case 'medium':
-        return <Badge variant="outline" className="bg-warning/20 text-warning border-warning/30">Medium</Badge>;
+        return <Badge className="bg-warning/20 text-warning border-warning/30">Medium</Badge>;
       case 'low':
         return <Badge variant="outline">Low</Badge>;
       default:
@@ -97,18 +114,66 @@ const IssueHandling = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'open':
-        return <Badge variant="outline" className="bg-destructive/20 text-destructive border-destructive/30">Open</Badge>;
+        return <Badge className="bg-destructive/20 text-destructive border-destructive/30">Open</Badge>;
       case 'in-progress':
-        return <Badge variant="outline" className="bg-warning/20 text-warning border-warning/30">In Progress</Badge>;
+        return <Badge className="bg-warning/20 text-warning border-warning/30">In Progress</Badge>;
       case 'resolved':
-        return <Badge variant="default" className="bg-success/20 text-success border-success/30">Resolved</Badge>;
+        return <Badge className="bg-success/20 text-success border-success/30">Resolved</Badge>;
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }
   };
 
+  const handleResolveIssue = (issueId: string) => {
+    const issue = openIssues.find(i => i.id === issueId);
+    if (issue) {
+      const resolvedIssue = {
+        id: issue.id,
+        title: issue.title,
+        lab: issue.lab,
+        reportedBy: issue.reportedBy,
+        resolvedDate: new Date().toISOString().split('T')[0],
+        resolvedBy: "Current Faculty",
+        priority: issue.priority,
+        resolution: "Issue resolved by faculty member"
+      };
+      
+      setOpenIssues(prev => prev.filter(i => i.id !== issueId));
+      // In a real app, you'd add to resolved issues
+      console.log("Issue resolved:", resolvedIssue);
+    }
+  };
+
+  const handleEscalateIssue = (issueId: string) => {
+    setOpenIssues(prev => prev.map(issue => 
+      issue.id === issueId 
+        ? { ...issue, priority: issue.priority === 'medium' ? 'high' : 'critical' }
+        : issue
+    ));
+  };
+
+  const handleAddIssue = () => {
+    const issue = {
+      ...newIssue,
+      id: `ISS${String(openIssues.length + 6).padStart(3, '0')}`,
+      reportedBy: "Current Faculty",
+      reportedDate: new Date().toISOString().split('T')[0],
+      status: "open"
+    };
+    
+    setOpenIssues(prev => [...prev, issue]);
+    setNewIssue({
+      title: "",
+      lab: "",
+      priority: "medium",
+      description: "",
+      assignedTo: ""
+    });
+    setIsAddingIssue(false);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -117,27 +182,110 @@ const IssueHandling = () => {
             Manage and resolve laboratory issues and equipment problems.
           </p>
         </div>
-        <Button className="bg-gradient-primary hover:opacity-90 shadow-glow">
-          <AlertTriangle className="w-4 h-4 mr-2" />
-          Report New Issue
-        </Button>
+        <Dialog open={isAddingIssue} onOpenChange={setIsAddingIssue}>
+          <DialogTrigger asChild>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
+              <AlertTriangle className="w-4 h-4 mr-2" />
+              Report New Issue
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Report New Issue</DialogTitle>
+              <DialogDescription>
+                Report a new laboratory or equipment issue.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="issue-title" className="text-right">Title</Label>
+                <Input
+                  id="issue-title"
+                  className="col-span-3"
+                  value={newIssue.title}
+                  onChange={(e) => setNewIssue(prev => ({...prev, title: e.target.value}))}
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="issue-lab" className="text-right">Laboratory</Label>
+                <Select onValueChange={(value) => setNewIssue(prev => ({...prev, lab: value}))}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select laboratory" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Electronics Lab 1">Electronics Lab 1</SelectItem>
+                    <SelectItem value="Communications Lab">Communications Lab</SelectItem>
+                    <SelectItem value="Digital Systems Lab">Digital Systems Lab</SelectItem>
+                    <SelectItem value="Microwave Lab">Microwave Lab</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="issue-priority" className="text-right">Priority</Label>
+                <Select onValueChange={(value) => setNewIssue(prev => ({...prev, priority: value}))}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="critical">Critical</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="issue-assignedTo" className="text-right">Assign To</Label>
+                <Input
+                  id="issue-assignedTo"
+                  className="col-span-3"
+                  value={newIssue.assignedTo}
+                  onChange={(e) => setNewIssue(prev => ({...prev, assignedTo: e.target.value}))}
+                  placeholder="Assign to TA or technician"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="issue-description" className="text-right">Description</Label>
+                <Textarea
+                  id="issue-description"
+                  className="col-span-3"
+                  value={newIssue.description}
+                  onChange={(e) => setNewIssue(prev => ({...prev, description: e.target.value}))}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddingIssue(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddIssue} disabled={!newIssue.title || !newIssue.lab}>
+                Report Issue
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Tabs for open and resolved issues */}
       <Tabs defaultValue="open" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-card/50 border border-border/50">
-          <TabsTrigger value="open" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
+        <TabsList className="grid w-full grid-cols-2 bg-secondary border border-border">
+          <TabsTrigger value="open" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Clock className="w-4 h-4 mr-2" />
             Open Issues ({openIssues.length})
           </TabsTrigger>
-          <TabsTrigger value="resolved" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="resolved" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <CheckCircle className="w-4 h-4 mr-2" />
             Resolved Issues
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="open" className="mt-6">
-          <Card className="bg-gradient-card border-border/50">
+          <Card className="border-2 border-border/50">
             <CardHeader>
-              <CardTitle className="text-card-foreground">Open Issues</CardTitle>
+              <CardTitle className="text-card-foreground flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                Open Issues
+              </CardTitle>
               <CardDescription>Issues requiring attention and resolution</CardDescription>
             </CardHeader>
             <CardContent>
@@ -155,7 +303,7 @@ const IssueHandling = () => {
                 </TableHeader>
                 <TableBody>
                   {openIssues.map((issue) => (
-                    <TableRow key={issue.id} className="border-border/50 hover:bg-sidebar-accent/20">
+                    <TableRow key={issue.id} className="border-border/50 hover:bg-accent/50">
                       <TableCell>
                         <div>
                           <p className="font-medium text-card-foreground">{issue.title}</p>
@@ -178,11 +326,20 @@ const IssueHandling = () => {
                       <TableCell>{getStatusBadge(issue.status)}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline" className="bg-success/20 text-success border-success/30 hover:bg-success/30">
+                          <Button 
+                            size="sm" 
+                            className="bg-success/20 text-success border-success/30 hover:bg-success/30"
+                            onClick={() => handleResolveIssue(issue.id)}
+                          >
                             <CheckCircle className="w-4 h-4 mr-1" />
                             Resolve
                           </Button>
-                          <Button size="sm" variant="outline" className="bg-warning/20 text-warning border-warning/30 hover:bg-warning/30">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="bg-warning/20 text-warning border-warning/30 hover:bg-warning/30"
+                            onClick={() => handleEscalateIssue(issue.id)}
+                          >
                             <ArrowUp className="w-4 h-4 mr-1" />
                             Escalate
                           </Button>
@@ -200,9 +357,12 @@ const IssueHandling = () => {
         </TabsContent>
 
         <TabsContent value="resolved" className="mt-6">
-          <Card className="bg-gradient-card border-border/50">
+          <Card className="border-2 border-border/50">
             <CardHeader>
-              <CardTitle className="text-card-foreground">Resolved Issues</CardTitle>
+              <CardTitle className="text-card-foreground flex items-center gap-2">
+                <CheckCircle className="w-5 h-5" />
+                Resolved Issues
+              </CardTitle>
               <CardDescription>Previously resolved issues and their solutions</CardDescription>
             </CardHeader>
             <CardContent>
@@ -219,7 +379,7 @@ const IssueHandling = () => {
                 </TableHeader>
                 <TableBody>
                   {resolvedIssues.map((issue) => (
-                    <TableRow key={issue.id} className="border-border/50 hover:bg-sidebar-accent/20">
+                    <TableRow key={issue.id} className="border-border/50 hover:bg-accent/50">
                       <TableCell>
                         <div>
                           <p className="font-medium text-card-foreground">{issue.title}</p>
