@@ -6,65 +6,76 @@
 
 @layer base {
   :root {
-    /* Light theme base colors */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* LMOS Dark Theme - Professional Color Palette */
+    
+    /* Primary Backgrounds */
+    --background: 222 47% 11%; /* #0F172A - Background Dark Blue */
+    --foreground: 0 0% 100%; /* #FFFFFF - Primary Text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card and Component Backgrounds */
+    --card: 217 32% 17%; /* #1E293B - Deep Gray/Dark Card Background */
+    --card-foreground: 0 0% 100%; /* #FFFFFF - Primary Text */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 217 32% 17%; /* #1E293B - Deep Gray */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF - Primary Text */
 
-    /* Primary brand colors - Muted Blue (#4A90E2) and Soft Purple (#7B61FF) */
-    --primary: 215 73% 64%;
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 262 100% 69%;
+    /* Accent Colors - Blue to Purple Gradient */
+    --primary: 243 75% 59%; /* #4F46E5 - Indigo */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --primary-glow: 258 90% 66%; /* #8B5CF6 - Violet */
 
-    --secondary: 210 40% 95%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    /* Secondary and Muted Colors */
+    --secondary: 217 32% 17%; /* #1E293B - Deep Gray */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 217 32% 15%; /* Slightly darker than card */
+    --muted-foreground: 214 32% 91%; /* #CBD5E1 - Secondary Text */
 
-    --accent: 210 40% 94%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: 217 32% 20%; /* Slightly lighter than card for accents */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    /* Status Colors */
+    --destructive: 0 84% 60%; /* #EF4444 - Red Accent */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 98%;
+    --success: 158 64% 52%; /* #10B981 - Green Button */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --warning: 25 95% 53%;
-    --warning-foreground: 222.2 84% 4.9%;
+    --warning: 38 92% 50%; /* Orange for warnings */
+    --warning-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 215 73% 64%;
+    /* Interactive Elements */
+    --border: 217 32% 20%; /* Subtle borders */
+    --input: 217 32% 17%; /* #1E293B - Search Input Background */
+    --ring: 243 75% 59%; /* #4F46E5 - Focus rings */
 
     --radius: 0.75rem;
 
-    /* Light sidebar colors */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 215 73% 64%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 210 40% 95%;
-    --sidebar-accent-foreground: 222.2 84% 4.9%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 215 73% 64%;
+    /* Sidebar Colors */
+    --sidebar-background: 222 47% 11%; /* #0F172A - Background Dark Blue */
+    --sidebar-foreground: 214 32% 91%; /* #CBD5E1 - Secondary Text */
+    --sidebar-primary: 243 75% 59%; /* #4F46E5 - Indigo */
+    --sidebar-primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --sidebar-accent: 217 32% 15%; /* Darker for sidebar accents */
+    --sidebar-accent-foreground: 0 0% 100%; /* #FFFFFF */
+    --sidebar-border: 217 32% 20%; /* Subtle sidebar borders */
+    --sidebar-ring: 243 75% 59%; /* #4F46E5 */
 
-    /* Light theme gradients and effects */
-    --gradient-primary: linear-gradient(135deg, hsl(215 73% 64%), hsl(262 100% 69%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(210 20% 98%));
-    --gradient-hero: linear-gradient(135deg, hsl(215 73% 64% / 0.1), hsl(262 100% 69% / 0.1));
+    /* Custom Gradients and Effects */
+    --gradient-primary: linear-gradient(135deg, hsl(243 75% 59%), hsl(258 90% 66%)); /* Indigo to Violet */
+    --gradient-card: linear-gradient(135deg, hsl(217 32% 17%), hsl(217 32% 20%)); /* Dark card gradient */
+    --gradient-hero: linear-gradient(135deg, hsl(243 75% 59% / 0.1), hsl(258 90% 66% / 0.1)); /* Subtle accent gradient */
     
-    --glow-primary: 0 0 20px hsl(215 73% 64% / 0.2);
-    --glow-accent: 0 0 30px hsl(262 100% 69% / 0.15);
+    /* Professional Glows and Shadows */
+    --glow-primary: 0 0 20px hsl(243 75% 59% / 0.3); /* Indigo glow */
+    --glow-accent: 0 0 30px hsl(258 90% 66% / 0.2); /* Violet glow */
     
-    --shadow-card: 0 4px 20px -4px hsl(215 73% 64% / 0.15);
-    --shadow-elevated: 0 8px 32px -8px hsl(215 73% 64% / 0.2);
+    --shadow-card: 0 8px 32px hsl(222 47% 2% / 0.4); /* Deep shadow for cards */
+    --shadow-elevated: 0 16px 48px hsl(222 47% 2% / 0.6); /* Elevated element shadow */
+
+    /* Button Specific Colors */
+    --button-blue: 213 94% 68%; /* #3B82F6 - Blue Button Background */
+    --button-green: 158 64% 52%; /* #10B981 - Green Button Background */
   }
 }
 

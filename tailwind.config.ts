@@ -70,6 +70,10 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				button: {
+					blue: 'hsl(var(--button-blue))', /* #3B82F6 - Blue Button Background */
+					green: 'hsl(var(--button-green))', /* #10B981 - Green Button Background */
 				}
 			},
 			backgroundImage: {
